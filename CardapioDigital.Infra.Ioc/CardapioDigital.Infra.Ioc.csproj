@@ -18,6 +18,7 @@
     <ProjectReference Include="..\CardapioDigital.Application\CardapioDigital.Application.csproj" />
     <ProjectReference Include="..\CardapioDigital.Domain\CardapioDigital.Domain.csproj" />
     <ProjectReference Include="..\CardapioDigital.Infra.Data\CardapioDigital.Infra.Data.csproj" />
+    <ProjectReference Include="..\CardapioDigital.Util\CardapioDigital.Util.csproj" />
   </ItemGroup>
 
 </Project>

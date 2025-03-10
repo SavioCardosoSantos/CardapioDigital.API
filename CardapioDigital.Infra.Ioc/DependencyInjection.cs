@@ -1,10 +1,7 @@
-﻿using CardapioDigital.Application.Interfaces;
+﻿using CardapioDigital.Application;
 using CardapioDigital.Application.Mappings;
-using CardapioDigital.Application.Services;
-using CardapioDigital.Domain.Interfaces;
+using CardapioDigital.Infra.Data;
 using CardapioDigital.Infra.Data.Context;
-using CardapioDigital.Infra.Data.Repositiories;
-using CardapioDigital.Infra.Data.Repositories;
 using CardapioDigital.Infra.Ioc.Mappings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -49,14 +46,9 @@ namespace CardapioDigital.Infra.Ioc
             services.AddAutoMapper(typeof(EntitiesToDTOMappingProfile));
             services.AddAutoMapper(typeof(DTOToModelsMappingProfile));
 
-            // Repositories
-            services.AddScoped<IClienteRepository, ClienteRepository>();
-            services.AddScoped<IRestauranteRepository, RestauranteRepository>();
+            services.ConfigureRepositoryLayer();
 
-            // Services
-            services.AddScoped<IClienteService, ClienteService>();
-            services.AddScoped<IRestauranteService, RestauranteService>();
-            services.AddScoped<IAuthService, AuthService>();
+            services.ConfigureApplicationLayer();
 
             return services;
         }

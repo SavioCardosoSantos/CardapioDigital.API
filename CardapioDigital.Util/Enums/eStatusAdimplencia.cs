@@ -1,4 +1,4 @@
-﻿namespace CardapioDigital.Infra.Ioc.Models.Enum
+﻿namespace CardapioDigital.Util.Models.Enum
 {
     public enum eStatusAdimplencia
     {

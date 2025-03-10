@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CardapioDigital.Infra.Ioc\CardapioDigital.Infra.Ioc.csproj" />
+    <ProjectReference Include="..\CardapioDigital.Util\CardapioDigital.Util.csproj" />
   </ItemGroup>
 
 </Project>
