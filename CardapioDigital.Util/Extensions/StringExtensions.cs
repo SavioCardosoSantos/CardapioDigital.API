@@ -61,8 +61,6 @@ namespace CardapioDigital.Util.Extensions
             return stringsToCheck.Count(s => str.Contains(s, StringComparison.InvariantCultureIgnoreCase)).Equals(countToCheck);
         }
 
-
-
         public static string HashText(this string text, string salt)
         {
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Concat(text, salt)));
@@ -139,6 +137,53 @@ namespace CardapioDigital.Util.Extensions
             return true;
         }
 
+        public static bool ValidarCpf(this string cpf)
+        {
+            string cpfLimpo = Regex.Replace(cpf, @"[^0-9]", "", RegexOptions.CultureInvariant, matchTimeout: TimeSpan.FromMilliseconds(2000));
+            if (cpfLimpo.Length != 11)
+                return false;
+
+            if (Regex.IsMatch(cpfLimpo, @"^(\d)\1+$", RegexOptions.CultureInvariant, matchTimeout: TimeSpan.FromMilliseconds(2000)))
+                return false;
+
+            return ValidarDigitosVerificadores(cpfLimpo);
+        }
+
+        public static bool ValidarTelefone(this string telefone)
+        {
+            string telefoneLimpo = Regex.Replace(telefone, @"[^0-9]", "", RegexOptions.CultureInvariant, matchTimeout: TimeSpan.FromMilliseconds(2000));
+            if (telefoneLimpo.Length != 11)
+                return false;
+
+            if (!Regex.IsMatch(telefoneLimpo, @"^[1-9]{2}9[0-9]{8}$", RegexOptions.CultureInvariant, matchTimeout: TimeSpan.FromMilliseconds(2000)))
+                return false;
+
+            return true;
+        }
+
+        public static string InserirMascaraTelefone(this string telefone)
+        {
+            string telefoneLimpo = Regex.Replace(telefone, @"[^0-9]", "", RegexOptions.CultureInvariant, matchTimeout: TimeSpan.FromMilliseconds(2000));
+            if (telefoneLimpo.Length != 11)
+                return telefone;
+
+            return $"({telefoneLimpo.Substring(0, 2)}) {telefoneLimpo.Substring(2, 5)}-{telefoneLimpo.Substring(7, 4)}";
+        }
+
+        public static string RemoverCaracteresNaoNumericos(this string telefone)
+        {
+            return Regex.Replace(telefone, @"[^0-9]", "", RegexOptions.CultureInvariant, matchTimeout: TimeSpan.FromMilliseconds(2000));
+        }
+
+        public static string FormatarCpf(this string cpf)
+        {
+            string cpfLimpo = Regex.Replace(cpf, @"[^0-9]", "", RegexOptions.CultureInvariant, matchTimeout: TimeSpan.FromMilliseconds(2000));
+            if (cpfLimpo.Length != 11)
+                return cpf;
+
+            return $"{cpfLimpo.Substring(0, 3)}.{cpfLimpo.Substring(3, 3)}.{cpfLimpo.Substring(6, 3)}-{cpfLimpo.Substring(9, 2)}";
+        }
+
         public static byte[] ConvertBase64ToByteArray(this string base64)
         {
             try
@@ -184,5 +229,27 @@ namespace CardapioDigital.Util.Extensions
         {
             return cep.Replace(".", "").Replace("-", "").Replace(" ", "");
         }
+
+
+        #region Métodos Privados da Classe
+        private static bool ValidarDigitosVerificadores(string cpf)
+        {
+            int[] multiplicadores1 = { 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+            int[] multiplicadores2 = { 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+
+            string cpfBase = cpf.Substring(0, 9);
+            int primeiroDigito = CalcularDigitoVerificador(cpfBase, multiplicadores1);
+            int segundoDigito = CalcularDigitoVerificador(cpfBase + primeiroDigito, multiplicadores2);
+
+            return cpf.EndsWith($"{primeiroDigito}{segundoDigito}");
+        }
+
+        private static int CalcularDigitoVerificador(string baseCpf, int[] multiplicadores)
+        {
+            int soma = baseCpf.Select((t, i) => (t - '0') * multiplicadores[i]).Sum();
+            int resto = soma % 11;
+            return resto < 2 ? 0 : 11 - resto;
+        }
+        #endregion
     }
 }

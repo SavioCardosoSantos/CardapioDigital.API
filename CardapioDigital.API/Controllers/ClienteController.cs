@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using CardapioDigital.Application.DTOs;
 using CardapioDigital.Application.Interfaces;
+using CardapioDigital.Infra.Ioc.Models.Base;
+using CardapioDigital.Infra.Ioc.Models.Response.Cliente;
+using CardapioDigital.Util.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CardapioDigital.API.Controllers
@@ -19,32 +22,71 @@ namespace CardapioDigital.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ClienteDTO>>> ListarTodos()
+        public async Task<ActionResult<IEnumerable<ClienteResponse>>> ListarTodos()
         {
-            return Ok(await _service.ListarTodos());
+            var clientesDTO = await _service.ListarTodos();
+            foreach (var cliente in clientesDTO)
+            {
+                cliente.Cpf = cliente.Cpf.FormatarCpf();
+                cliente.Contato = cliente.Contato.InserirMascaraTelefone();
+            }
+
+            return Ok(_mapper.Map<IEnumerable<ClienteResponse>>(clientesDTO));
         }
 
         [HttpGet("{cpf}")]
-        public async Task<ActionResult<ClienteDTO>> BuscarPorCpf(string cpf)
+        public async Task<ActionResult<ClienteResponse>> BuscarPorCpf(string cpf)
         {
-            var cliente = await _service.BuscarClientePorCpf(cpf);
-            if (cliente == null)
+            cpf = cpf.RemoverCaracteresNaoNumericos();
+            if (!cpf.ValidarCpf())
+                return BadRequest("CPF inválido.");
+
+            var clienteDTO = await _service.BuscarClientePorCpf(cpf);
+            if (clienteDTO == null)
                 return NotFound("Cliente não encontrado.");
 
-            return Ok(cliente);
+            clienteDTO.Cpf = clienteDTO.Cpf.FormatarCpf();
+            clienteDTO.Contato = clienteDTO.Contato.InserirMascaraTelefone();
+
+            return Ok(_mapper.Map<ClienteResponse>(clienteDTO));
         }
 
         [HttpPost]
-        public async Task<ActionResult> Cadastrar(ClienteDTO cliente)
+        public async Task<ActionResult> Cadastrar(ClienteBase cliente)
         {
-            await _service.Inserir(cliente);
+            cliente.Cpf = cliente.Cpf.RemoverCaracteresNaoNumericos();
+            if (!cliente.Cpf.ValidarCpf())
+                return BadRequest("CPF inválido.");
+
+            cliente.Contato = cliente.Contato.RemoverCaracteresNaoNumericos();
+            if (!cliente.Contato.ValidarTelefone())
+                return BadRequest("Contato inválido.");
+
+            if (cliente.DataNascimento > DateOnly.FromDateTime(DateTime.Now))
+                return BadRequest("Data de Nascimento não pode ser maior que a data atual.");
+
+            await _service.Inserir(_mapper.Map<ClienteDTO>(cliente));
             return Ok("Cliente salvo com sucesso!");
         }
 
-        [HttpPut]
-        public async Task<ActionResult> Editar(ClienteDTO cliente)
+        [HttpPut("{clienteId}")]
+        public async Task<ActionResult> Editar(int clienteId, ClienteBase cliente)
         {
-            await _service.Alterar(cliente);
+            cliente.Cpf = cliente.Cpf.RemoverCaracteresNaoNumericos();
+            if (!cliente.Cpf.ValidarCpf())
+                return BadRequest("CPF inválido.");
+
+            cliente.Contato = cliente.Contato.RemoverCaracteresNaoNumericos();
+            if (!cliente.Contato.ValidarTelefone())
+                return BadRequest("Contato inválido.");
+
+            if (cliente.DataNascimento > DateOnly.FromDateTime(DateTime.Now))
+                return BadRequest("Data de Nascimento não pode ser maior que a data atual.");
+
+            var clienteDTO = _mapper.Map<ClienteDTO>(cliente);
+            clienteDTO.Id = clienteId;
+
+            await _service.Alterar(clienteDTO);
             return Ok("Cliente editado com sucesso!");
         }
 

@@ -20,5 +20,10 @@
 
             return age;
         }
+
+        public static DateTime ZerarHoras(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, 0, 0, 0, dateTime.Kind);
+        }
     }
 }

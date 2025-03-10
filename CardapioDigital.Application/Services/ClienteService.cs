@@ -21,7 +21,7 @@ namespace CardapioDigital.Application.Services
         {
             var cliente = _mapper.Map<Cliente>(clienteDTO);
 
-            var clienteExistente = _repository.BuscarClientePorCpf(clienteDTO.Cpf);
+            var clienteExistente = await _repository.BuscarClientePorCpf(clienteDTO.Cpf);
             if (clienteExistente != null)
             {
                 if (clienteExistente.Id != clienteDTO.Id)
