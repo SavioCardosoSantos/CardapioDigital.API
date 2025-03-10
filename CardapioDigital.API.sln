@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35027.167
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CardapioDigital.API", "CardapioDigital.API\CardapioDigital.API.csproj", "{85014A48-7208-4BE0-BF3B-8CCD8C433595}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardapioDigital.Domain", "CardapioDigital.Domain\CardapioDigital.Domain.csproj", "{410B4ABB-48A0-4BA9-84A6-5699FC2627D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardapioDigital.Infra.Data", "CardapioDigital.Infra.Data\CardapioDigital.Infra.Data.csproj", "{1EBD7E08-D898-4D40-AE0A-494D6312790F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardapioDigital.Infra.Ioc", "CardapioDigital.Infra.Ioc\CardapioDigital.Infra.Ioc.csproj", "{611EBC86-CBD4-4EC7-9D50-348FA9953FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CardapioDigital.Application", "CardapioDigital.Application\CardapioDigital.Application.csproj", "{9A3FA3B4-779F-418A-93E8-632E0897696B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85014A48-7208-4BE0-BF3B-8CCD8C433595}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85014A48-7208-4BE0-BF3B-8CCD8C433595}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85014A48-7208-4BE0-BF3B-8CCD8C433595}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85014A48-7208-4BE0-BF3B-8CCD8C433595}.Release|Any CPU.Build.0 = Release|Any CPU
+		{410B4ABB-48A0-4BA9-84A6-5699FC2627D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{410B4ABB-48A0-4BA9-84A6-5699FC2627D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{410B4ABB-48A0-4BA9-84A6-5699FC2627D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{410B4ABB-48A0-4BA9-84A6-5699FC2627D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EBD7E08-D898-4D40-AE0A-494D6312790F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EBD7E08-D898-4D40-AE0A-494D6312790F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EBD7E08-D898-4D40-AE0A-494D6312790F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EBD7E08-D898-4D40-AE0A-494D6312790F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{611EBC86-CBD4-4EC7-9D50-348FA9953FC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{611EBC86-CBD4-4EC7-9D50-348FA9953FC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{611EBC86-CBD4-4EC7-9D50-348FA9953FC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{611EBC86-CBD4-4EC7-9D50-348FA9953FC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A3FA3B4-779F-418A-93E8-632E0897696B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A3FA3B4-779F-418A-93E8-632E0897696B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A3FA3B4-779F-418A-93E8-632E0897696B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A3FA3B4-779F-418A-93E8-632E0897696B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {92A286B8-40A4-476A-851D-0E648B00986C}
+	EndGlobalSection
+EndGlobal
