@@ -43,7 +43,7 @@ namespace CardapioDigital.Infra.Data.Repositiories
 
         public async Task<IEnumerable<Restaurante>> ListarTodos()
         {
-            return await _context.Restaurante.Where(x => x.Excluido == 0 && x.Id != 1).ToListAsync();
+            return await _context.Restaurante.ToListAsync();
         }
 
         private async Task SaveAllAsync()
