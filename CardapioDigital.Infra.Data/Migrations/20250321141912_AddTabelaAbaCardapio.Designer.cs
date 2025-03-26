@@ -4,6 +4,7 @@ using CardapioDigital.Infra.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CardapioDigital.Infra.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250321141912_AddTabelaAbaCardapio")]
+    partial class AddTabelaAbaCardapio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -205,10 +208,6 @@ namespace CardapioDigital.Infra.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AbaCardapioId")
-                        .HasColumnType("int")
-                        .HasColumnName("aba_cardapio_id");
-
                     b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -243,8 +242,6 @@ namespace CardapioDigital.Infra.Data.Migrations
                         .HasColumnName("serve_qtd_pessoas");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AbaCardapioId");
 
                     b.HasIndex("RestauranteId");
 
@@ -474,19 +471,11 @@ namespace CardapioDigital.Infra.Data.Migrations
 
             modelBuilder.Entity("CardapioDigital.Domain.Entities.RestauranteItemCardapio", b =>
                 {
-                    b.HasOne("CardapioDigital.Domain.Entities.RestauranteAbaCardapio", "AbaCardapio")
-                        .WithMany("Itens")
-                        .HasForeignKey("AbaCardapioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CardapioDigital.Domain.Entities.Restaurante", "Restaurante")
                         .WithMany("RestauranteItemCardapios")
                         .HasForeignKey("RestauranteId")
                         .IsRequired()
                         .HasConstraintName("FK_RESTAURANTE_ITEM_CARDAPIO_RESTAURANTE_ITEM_CARDAPIO");
-
-                    b.Navigation("AbaCardapio");
 
                     b.Navigation("Restaurante");
                 });
@@ -572,11 +561,6 @@ namespace CardapioDigital.Infra.Data.Migrations
                     b.Navigation("RestauranteItemCardapios");
 
                     b.Navigation("RestauranteMesas");
-                });
-
-            modelBuilder.Entity("CardapioDigital.Domain.Entities.RestauranteAbaCardapio", b =>
-                {
-                    b.Navigation("Itens");
                 });
 
             modelBuilder.Entity("CardapioDigital.Domain.Entities.RestauranteItemCardapio", b =>

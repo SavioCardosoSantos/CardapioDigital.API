@@ -22,12 +22,16 @@ namespace CardapioDigital.Infra.Data.Repositories
 
         public async Task<Cliente?> BuscarClientePorCpf(string cpf)
         {
-            return await _context.Cliente.Where(x => x.Cpf == cpf).FirstOrDefaultAsync();
+            return await _context.Cliente.AsNoTracking()
+                .Where(x => x.Cpf == cpf)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Cliente?> BuscarClientePorId(int clienteId)
         {
-            return await _context.Cliente.Where(x => x.Id == clienteId).FirstOrDefaultAsync();
+            return await _context.Cliente.AsNoTracking()
+                .Where(x => x.Id == clienteId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task Excluir(Cliente cliente)
@@ -44,7 +48,8 @@ namespace CardapioDigital.Infra.Data.Repositories
 
         public async Task<IEnumerable<Cliente>> ListarTodos()
         {
-            return await _context.Cliente.ToListAsync();
+            return await _context.Cliente.AsNoTracking()
+                .ToListAsync();
         }
 
         private async Task SaveAllAsync()

@@ -6,6 +6,7 @@ using CardapioDigital.Application.DTOs;
 using CardapioDigital.Infra.Ioc.Models.Response.Cliente;
 using CardapioDigital.Domain.Entities;
 using CardapioDigital.Util.Enums;
+using CardapioDigital.Infra.Ioc.Models.Response.AbaCardapio;
 
 namespace CardapioDigital.Infra.Ioc.Mappings
 {
@@ -23,6 +24,10 @@ namespace CardapioDigital.Infra.Ioc.Mappings
 
             CreateMap<ClienteBase, ClienteDTO>();
             CreateMap<ClienteDTO, ClienteResponse>();
+
+            CreateMap<AbaCardapioBase, AbaCardapioDTO>();
+            CreateMap<AbaCardapioDTO, AbaCardapioResponse>();
+            CreateMap<AbaCardapioDTO, RestauranteAbaCardapio>().ReverseMap();
         }
     }
 }

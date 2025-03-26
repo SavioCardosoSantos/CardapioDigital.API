@@ -22,17 +22,23 @@ namespace CardapioDigital.Infra.Data.Repositiories
 
         public async Task<Restaurante?> BuscarPorEmail(string email)
         {
-            return await _context.Restaurante.Where(x => x.Email.ToLower() == email.ToLower() && x.Excluido == 0).AsNoTracking().FirstOrDefaultAsync();
+            return await _context.Restaurante.AsNoTracking()
+                .Where(x => x.Email.ToLower() == email.ToLower() && x.Excluido == 0)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Restaurante?> BuscarPorId(int restauranteId)
         {
-            return await _context.Restaurante.Where(x => x.Id == restauranteId && x.Excluido == 0).AsNoTracking().FirstOrDefaultAsync();
+            return await _context.Restaurante.AsNoTracking()
+                .Where(x => x.Id == restauranteId && x.Excluido == 0)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Restaurante?> BuscarPorIdWithExcluidos(int restauranteId)
         {
-            return await _context.Restaurante.Where(x => x.Id == restauranteId).AsNoTracking().FirstOrDefaultAsync();
+            return await _context.Restaurante.AsNoTracking()
+                .Where(x => x.Id == restauranteId)
+                .FirstOrDefaultAsync();
         }
 
         public async Task Inserir(Restaurante restaurante)
@@ -43,7 +49,8 @@ namespace CardapioDigital.Infra.Data.Repositiories
 
         public async Task<IEnumerable<Restaurante>> ListarTodos()
         {
-            return await _context.Restaurante.ToListAsync();
+            return await _context.Restaurante.AsNoTracking()
+                .ToListAsync();
         }
 
         private async Task SaveAllAsync()

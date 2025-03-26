@@ -13,6 +13,9 @@ public partial class RestauranteItemCardapio
     [Column("restaurante_id")]
     public int RestauranteId { get; set; }
 
+    [Column("aba_cardapio_id")]
+    public int AbaCardapioId { get; set; }
+
     [Required]
     [Column("nome")]
     [MaxLength(100)]
@@ -44,4 +47,8 @@ public partial class RestauranteItemCardapio
     [ForeignKey("RestauranteId")]
     [InverseProperty("RestauranteItemCardapios")]
     public virtual Restaurante Restaurante { get; set; }
+
+    [ForeignKey("AbaCardapioId")]
+    [InverseProperty("Itens")]
+    public virtual RestauranteAbaCardapio AbaCardapio { get; set; }
 }

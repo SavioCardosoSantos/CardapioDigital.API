@@ -30,6 +30,10 @@ public partial class Restaurante
     [Column("password_salt")]
     public byte[] PasswordSalt { get; set; }
 
+
+    [InverseProperty("Restaurante")]
+    public virtual ICollection<RestauranteAbaCardapio> RestauranteAbaCardapios { get; set; } = new List<RestauranteAbaCardapio>();
+
     [InverseProperty("Restaurante")]
     public virtual ICollection<RestauranteItemCardapio> RestauranteItemCardapios { get; set; } = new List<RestauranteItemCardapio>();
 
