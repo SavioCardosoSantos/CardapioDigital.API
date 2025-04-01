@@ -1,3 +1,4 @@
+using CardapioDigital.API.Middleware;
 using CardapioDigital.Infra.Ioc;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,8 @@ var app = builder.Build();
 
 app.UseSwagger();
 app.UseSwaggerUI();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
