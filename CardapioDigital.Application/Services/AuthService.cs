@@ -12,12 +12,10 @@ namespace CardapioDigital.Application.Services
     public class AuthService : IAuthService
     {
         private readonly IRestauranteRepository _repository;
-        private readonly IConfiguration _configuration;
 
         public AuthService(IRestauranteRepository repository, IConfiguration configuration)
         {
             _repository = repository;
-            _configuration = configuration;
         }
 
         public async Task<string> AuthenticateAsync(string email, string senha)
@@ -45,13 +43,13 @@ namespace CardapioDigital.Application.Services
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            var privateKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var privateKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")));
             var credentials = new SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256);
             var expiration = DateTime.UtcNow.AddMinutes(600);
 
             JwtSecurityToken token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
+                issuer: Environment.GetEnvironmentVariable("JWT_ISSUER"),
+                audience: Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
                 claims: claims,
                 expires: expiration,
                 signingCredentials: credentials
