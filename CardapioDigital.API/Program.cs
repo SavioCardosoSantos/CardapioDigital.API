@@ -1,6 +1,8 @@
 using CardapioDigital.API.Middleware;
 using CardapioDigital.Infra.Ioc;
 
+DotNetEnv.Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();

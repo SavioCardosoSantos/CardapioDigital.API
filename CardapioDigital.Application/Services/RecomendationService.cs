@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
-using CardapioDigital.Application.Interfaces;
-using System.Text.Json;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using System.Text.Json.Serialization;
-using Newtonsoft.Json;
 using CardapioDigital.Application.DTOs.ChatGPT;
+using CardapioDigital.Application.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using System.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace CardapioDigital.Application.Services
@@ -19,7 +17,7 @@ namespace CardapioDigital.Application.Services
         public RecommendationService(IMapper mapper, IConfiguration configuration)
         {
             _mapper = mapper;
-            _apiKey = configuration["ChatGPT:Apikey"];
+            _apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
