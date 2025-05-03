@@ -55,8 +55,8 @@ namespace CardapioDigital.API.Controllers
         public async Task<ActionResult<IEnumerable<AbaCardapioResponse>>> ListarTodos()
         {
             var restauranteId = int.Parse(User.FindFirst("id").Value);
-            var restaurantesDTO = await _service.BuscarPorRestauranteId(restauranteId);
-            return Ok(_mapper.Map<IEnumerable<AbaCardapioResponse>>(restaurantesDTO));
+            var abasDTO = await _service.BuscarPorRestauranteId(restauranteId);
+            return Ok(_mapper.Map<IEnumerable<AbaCardapioResponse>>(abasDTO));
         }
 
         [HttpDelete("{abaCardapioId}")]

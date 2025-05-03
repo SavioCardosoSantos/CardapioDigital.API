@@ -26,5 +26,12 @@ namespace CardapioDigital.Domain.Entities
         [ForeignKey("TagId")]
         [InverseProperty("TagItemCardapios")]
         public virtual Tag Tag { get; set; }
+
+        public TagItemCardapio() { }
+        public TagItemCardapio(int itemId, int tagId) 
+        { 
+            ItemId = itemId;
+            TagId = tagId;
+        }
     }
 }

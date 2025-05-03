@@ -10,6 +10,7 @@ namespace CardapioDigital.Application.Mappings
         { 
             CreateMap<Cliente, ClienteDTO>().ReverseMap();
             CreateMap<Restaurante, RestauranteDTO>().ReverseMap();
+            CreateMap<RestauranteItemCardapio, ItemCardapioDTO>().ReverseMap();
         }
     }
 }

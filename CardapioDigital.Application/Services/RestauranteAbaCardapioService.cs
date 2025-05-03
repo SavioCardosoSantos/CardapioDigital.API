@@ -44,5 +44,11 @@ namespace CardapioDigital.Application.Services
             var abaRestaurante = await _repository.BuscarPorId(abaId) ?? throw new Exception("Aba não encontrada.");
             await _repository.Excluir(abaRestaurante);
         }
+
+        public async Task<AbaCardapioDTO> BuscarPorId(int abaId)
+        {
+            var aba = await _repository.BuscarPorId(abaId);
+            return _mapper.Map<AbaCardapioDTO>(aba);
+        }
     }
 }

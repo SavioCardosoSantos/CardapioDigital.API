@@ -20,6 +20,12 @@ namespace CardapioDigital.Infra.Data.Repositiories
             await SaveAllAsync();
         }
 
+        public async Task InserirRange(IEnumerable<TagItemCardapio> listTagItensCardapio)
+        {
+            _context.TagItemCardapio.AddRange(listTagItensCardapio);
+            await SaveAllAsync();
+        }
+
         public async Task Alterar(TagItemCardapio tagItemCardapio)
         {
             _context.Entry(tagItemCardapio).State = EntityState.Modified;

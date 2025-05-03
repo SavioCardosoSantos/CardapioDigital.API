@@ -37,6 +37,9 @@ public partial class RestauranteItemCardapio
     [Column("serve_qtd_pessoas")]
     public int ServeQtdPessoas { get; set; }
 
+    [Column("excluido")]
+    public int Excluido { get; set; }
+     
 
     [InverseProperty("Item")]
     public virtual ICollection<AtendimentoPedidoCliente> AtendimentoPedidoClientes { get; set; } = new List<AtendimentoPedidoCliente>();

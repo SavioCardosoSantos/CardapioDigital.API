@@ -18,5 +18,11 @@ namespace CardapioDigital.Domain.Entities
 
         [InverseProperty("Tag")]
         public virtual ICollection<TagItemCardapio> TagItemCardapios { get; set; } = new List<TagItemCardapio>();
+
+        public Tag() { }
+        public Tag(string texto)
+        {
+            this.Texto = texto; 
+        }
     }
 }

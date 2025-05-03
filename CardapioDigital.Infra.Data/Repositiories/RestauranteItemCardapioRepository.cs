@@ -29,7 +29,7 @@ namespace CardapioDigital.Infra.Data.Repositiories
         public async Task<RestauranteItemCardapio?> BuscarPorId(int itemId)
         {
             return await _context.RestauranteItemCardapio.AsNoTracking()
-                .Where(i => i.Id == itemId)
+                .Where(i => i.Id == itemId && i.Excluido == 0)
                 .Include(i => i.TagItemCardapios)
                 .ThenInclude(tic => tic.Tag)
                 .FirstOrDefaultAsync();
@@ -38,7 +38,7 @@ namespace CardapioDigital.Infra.Data.Repositiories
         public async Task<IEnumerable<RestauranteItemCardapio>> ListarPorRestauranteId(int restauranteId)
         {
             return await _context.RestauranteItemCardapio.AsNoTracking()
-                .Where(i => i.RestauranteId == restauranteId)
+                .Where(i => i.RestauranteId == restauranteId && i.Excluido == 0)
                 .Include(i => i.TagItemCardapios)
                 .ThenInclude(tic => tic.Tag)
                 .ToListAsync();
@@ -47,7 +47,7 @@ namespace CardapioDigital.Infra.Data.Repositiories
         public async Task<IEnumerable<RestauranteItemCardapio>> ListarPorAbaId(int abaId)
         {
             return await _context.RestauranteItemCardapio.AsNoTracking()
-                .Where(i => i.AbaCardapioId == abaId)
+                .Where(i => i.AbaCardapioId == abaId && i.Excluido == 0)
                 .Include(i => i.TagItemCardapios)
                 .ThenInclude(tic => tic.Tag)
                 .ToListAsync();
