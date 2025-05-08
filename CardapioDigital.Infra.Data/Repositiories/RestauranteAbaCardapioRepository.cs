@@ -20,6 +20,14 @@ namespace CardapioDigital.Infra.Data.Repositiories
             await SaveAllAsync();
         }
 
+        public async Task AlterarRange(IEnumerable<RestauranteAbaCardapio> abas)
+        {
+            foreach (var aba in abas)
+                _context.Entry(aba).State = EntityState.Modified;
+
+            await SaveAllAsync();
+        }
+
         public async Task<RestauranteAbaCardapio?> BuscarPorId(int abaId)
         {
             return await _context.RestauranteAbaCardapio.AsNoTracking()
@@ -31,7 +39,21 @@ namespace CardapioDigital.Infra.Data.Repositiories
         {
             return await _context.RestauranteAbaCardapio.AsNoTracking()
                 .Where(x => x.RestauranteId == restauranteId)
+                .OrderBy(x => x.Ordenacao)
                 .ToListAsync();
+        }
+
+        public async Task<int> BuscarProximaOrdenacao(int restauranteId)
+        {
+            var aba = await _context.RestauranteAbaCardapio.AsNoTracking()
+                .Where(x => x.RestauranteId == restauranteId)
+                .OrderByDescending(x => x.Ordenacao)
+                .FirstOrDefaultAsync();
+
+            if (aba == null)
+                return 1;
+            else
+                return aba.Ordenacao + 1;
         }
 
         public async Task Excluir(RestauranteAbaCardapio aba)

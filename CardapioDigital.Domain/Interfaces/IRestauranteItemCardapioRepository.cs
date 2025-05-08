@@ -6,8 +6,10 @@ namespace CardapioDigital.Domain.Interfaces
     {
         Task Inserir(RestauranteItemCardapio item);
         Task Alterar(RestauranteItemCardapio item);
+        Task AlterarRange(IEnumerable<RestauranteItemCardapio> itens);
         Task<RestauranteItemCardapio?> BuscarPorId(int itemId);
         Task<IEnumerable<RestauranteItemCardapio>> ListarPorRestauranteId(int restauranteId);
         Task<IEnumerable<RestauranteItemCardapio>> ListarPorAbaId(int abaId);
+        Task<int> BuscarProximaOrdenacao(int restauranteId);
     }
 }

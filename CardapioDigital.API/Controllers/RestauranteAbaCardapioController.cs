@@ -51,6 +51,17 @@ namespace CardapioDigital.API.Controllers
             return Ok("Aba editada com sucesso!");
         }
 
+        [HttpPut("ordenacao")]
+        public async Task<ActionResult> SalvarOrdenacao(int[] abaCardapioIds)
+        {
+            var restauranteId = int.Parse(User.FindFirst("id").Value);
+            if (restauranteId == 1)
+                return Unauthorized("O usuário administrador não pode editar a ordenação das abas.");
+
+            await _service.SalvarOrdenacao(abaCardapioIds, restauranteId);
+            return Ok("Ordenação salva com sucesso!");
+        }
+
         [HttpGet("listar-todos")]
         public async Task<ActionResult<IEnumerable<AbaCardapioResponse>>> ListarTodos()
         {

@@ -46,6 +46,32 @@ namespace CardapioDigital.API.Controllers
             return Ok(_mapper.Map<IEnumerable<ItemCardapioResponse>>(itensDTO));
         }
 
+        [HttpPut("{itemCardapioId}")]
+        public async Task<ActionResult> Editar(int itemCardapioId, ItemCardapioBase itemCardapio)
+        {
+            var restauranteId = int.Parse(User.FindFirst("id").Value);
+            if (restauranteId == 1)
+                return Unauthorized("O usuário administrador não pode editar itens.");
+
+            var itemCardapioDTO = _mapper.Map<ItemCardapioDTO>(itemCardapio);
+            itemCardapioDTO.RestauranteId = restauranteId;
+            itemCardapioDTO.Id = itemCardapioId;
+
+            await _service.Alterar(itemCardapioDTO);
+            return Ok("Item editado com sucesso!");
+        }
+
+        [HttpPut("aba/{abaCardapioId}/ordenacao")]
+        public async Task<ActionResult> SalvarOrdenacao(int[] itemIds, int abaCardapioId)
+        {
+            var restauranteId = int.Parse(User.FindFirst("id").Value);
+            if (restauranteId == 1)
+                return Unauthorized("O usuário administrador não pode editar a ordenação dos itens.");
+
+            await _service.SalvarOrdenacao(itemIds, abaCardapioId, restauranteId);
+            return Ok("Ordenação salva com sucesso!");
+        }
+
         [HttpPut("inativar/{itemCardapioId}")]
         public async Task<ActionResult> Inativar(int itemCardapioId)
         {

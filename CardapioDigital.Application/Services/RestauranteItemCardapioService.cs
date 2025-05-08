@@ -37,6 +37,33 @@ namespace CardapioDigital.Application.Services
 
             item.Disponivel = 1;
             item.Imagem = itemDTO.ImagemBase64.ConvertBase64ToByteArray();
+            item.Ordenacao = await _repository.BuscarProximaOrdenacao(item.AbaCardapioId);
+            await _repository.Inserir(item);
+
+            await _tagItemCardapioService.CadastrarTagsItem(_mapper.Map<ItemCardapioDTO>(item));
+        }
+
+        public async Task Alterar(ItemCardapioDTO itemDTO)
+        {
+            var itemEntity = await _repository.BuscarPorId(itemDTO.Id);
+            var abaCardapioExistente = await _abaCardapioService.BuscarPorId(itemDTO.AbaCardapioId);
+
+            if (abaCardapioExistente == null)
+                throw new Exception("A aba informada não existe.");
+            else if (abaCardapioExistente.RestauranteId != itemDTO.RestauranteId)
+                throw new Exception("A aba informada não existe.");
+            else if (itemEntity == null)
+                throw new Exception("O item informado não existe.");
+            else if (abaCardapioExistente.RestauranteId != itemDTO.RestauranteId)
+                throw new Exception("O item informado não existe.");
+
+            var item = _mapper.Map<RestauranteItemCardapio>(itemDTO);
+            item.Disponivel = itemEntity.Disponivel;
+            item.Imagem = itemDTO.ImagemBase64.ConvertBase64ToByteArray();
+            item.Ordenacao = itemEntity.Ordenacao;
+            item.Id = 0;
+
+            await Excluir(itemDTO.Id, itemDTO.RestauranteId);
             await _repository.Inserir(item);
 
             await _tagItemCardapioService.CadastrarTagsItem(_mapper.Map<ItemCardapioDTO>(item));
@@ -56,7 +83,12 @@ namespace CardapioDigital.Application.Services
             foreach (var item in itens)
             {
                 var itemDTO = _mapper.Map<ItemCardapioDTO>(item);
-                itemDTO.ImagemBase64 = item.Imagem.ConvertToBase64WithMimeType();
+                if (item.Imagem.Length > 0)
+                    itemDTO.ImagemBase64 = item.Imagem.ConvertToBase64WithMimeType();
+
+                foreach (var tagItem in item.TagItemCardapios)
+                    itemDTO.Tags.Add(tagItem.Tag.Texto);
+
                 itensDTO.Add(itemDTO);
             }
 
@@ -97,6 +129,18 @@ namespace CardapioDigital.Application.Services
 
             itemCardapioExistente.Excluido = 1;
             await _repository.Alterar(itemCardapioExistente);
+        }
+
+        public async Task SalvarOrdenacao(int[] itemIds, int abaCardapioId, int restauranteId)
+        {
+            var itens = await _repository.ListarPorAbaId(abaCardapioId);
+            for (int i = 0; i < itemIds.Length; i++)
+            {
+                var item = itens.First(x => x.Id == itemIds[i]);
+                item.Ordenacao = i + 1;
+            }
+
+            await _repository.AlterarRange(itens);
         }
     }
 }

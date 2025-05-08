@@ -20,6 +20,7 @@ namespace CardapioDigital.Application.Services
         public async Task Inserir(AbaCardapioDTO aba)
         {
             var restauranteAbaCardapio = _mapper.Map<RestauranteAbaCardapio>(aba);
+            restauranteAbaCardapio.Ordenacao = await _repository.BuscarProximaOrdenacao(aba.RestauranteId);
             await _repository.Inserir(restauranteAbaCardapio);
         }
 
@@ -49,6 +50,18 @@ namespace CardapioDigital.Application.Services
         {
             var aba = await _repository.BuscarPorId(abaId);
             return _mapper.Map<AbaCardapioDTO>(aba);
+        }
+
+        public async Task SalvarOrdenacao(int[] abaIds, int restauranteId)
+        {
+            var abas = await _repository.BuscarPorRestauranteId(restauranteId);
+            for (int i = 0; i < abaIds.Length; i++)
+            {
+                var aba = abas.First(x => x.Id == abaIds[i]);
+                aba.Ordenacao = i + 1;
+            }
+
+            await _repository.AlterarRange(abas);
         }
     }
 }

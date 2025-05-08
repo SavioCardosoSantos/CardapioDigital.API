@@ -34,8 +34,8 @@ public partial class RestauranteItemCardapio
     [Column("disponivel")]
     public int Disponivel { get; set; }
 
-    [Column("serve_qtd_pessoas")]
-    public int ServeQtdPessoas { get; set; }
+    [Column("ordenacao")]
+    public int Ordenacao { get; set; }
 
     [Column("excluido")]
     public int Excluido { get; set; }

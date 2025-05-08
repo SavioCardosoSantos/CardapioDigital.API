@@ -50,7 +50,16 @@ namespace CardapioDigital.Infra.Data.Repositiories
                 .Where(i => i.AbaCardapioId == abaId && i.Excluido == 0)
                 .Include(i => i.TagItemCardapios)
                 .ThenInclude(tic => tic.Tag)
+                .OrderBy(x => x.Ordenacao)
                 .ToListAsync();
+        }
+
+        public async Task AlterarRange(IEnumerable<RestauranteItemCardapio> itens)
+        {
+            foreach (var item in itens)
+                _context.Entry(item).State = EntityState.Modified;
+
+            await SaveAllAsync();
         }
 
         private async Task SaveAllAsync()
@@ -58,6 +67,19 @@ namespace CardapioDigital.Infra.Data.Repositiories
             var success = await _context.SaveChangesAsync() > 0;
             if (!success)
                 throw new DbUpdateException();
+        }
+
+        public async Task<int> BuscarProximaOrdenacao(int abaCardapioId)
+        {
+            var aba = await _context.RestauranteItemCardapio.AsNoTracking()
+                .Where(x => x.AbaCardapioId == abaCardapioId)
+                .OrderByDescending(x => x.Ordenacao)
+                .FirstOrDefaultAsync();
+
+            if (aba == null)
+                return 1;
+            else
+                return aba.Ordenacao + 1;
         }
     }
 }

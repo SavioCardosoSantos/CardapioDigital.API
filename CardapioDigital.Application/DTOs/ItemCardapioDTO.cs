@@ -10,6 +10,6 @@
         public string ImagemBase64 { get; set; }
         public decimal Preco { get; set; }
         public int Disponivel { get; set; }
-        public int ServeQtdPessoas { get; set; }
+        public List<string> Tags { get; set; } = new List<string>();
     }
 }

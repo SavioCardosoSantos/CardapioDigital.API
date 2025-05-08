@@ -20,8 +20,5 @@ namespace CardapioDigital.Infra.Ioc.Models.Base
 
         [Required(ErrorMessage = "O Preço é obrigatório")]
         public decimal Preco { get; set; }
-
-        [Required(ErrorMessage = "A Quantidade de Pessoas que o item serve é obrigatória")]
-        public int ServeQtdPessoas { get; set; }
     }
 }

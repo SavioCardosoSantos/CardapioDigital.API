@@ -7,5 +7,6 @@ namespace CardapioDigital.Infra.Ioc.Models.Response.ItemCardapio
         public int Id { get; set; }
         public int RestauranteId { get; set; }
         public int Disponivel {  get; set; }
+        public List<string> Tags { get; set; } = new List<string>();
     }
 }
