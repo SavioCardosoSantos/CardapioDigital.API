@@ -42,4 +42,7 @@ public partial class Cliente
 
     [InverseProperty("Cliente")]
     public virtual ICollection<TagCliente> TagClientes { get; set; } = new List<TagCliente>();
+
+    [InverseProperty("Cliente")]
+    public virtual ICollection<RestricaoAlimentarCliente> RestricaoAlimentarClientes { get; set; } = new List<RestricaoAlimentarCliente>();
 }

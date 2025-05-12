@@ -26,7 +26,7 @@ namespace CardapioDigital.Application.Services
         public async Task<TagDTO> Inserir(string texto)
         {
             string textoNormalizado = texto.ToLower().Trim();
-            var tag = new Tag(texto);
+            var tag = new Tag(textoNormalizado);
             await _repository.Inserir(tag);
             return await BuscarPorTexto(textoNormalizado);
         }

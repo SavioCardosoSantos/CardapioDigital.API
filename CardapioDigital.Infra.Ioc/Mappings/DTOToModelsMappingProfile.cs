@@ -35,6 +35,8 @@ namespace CardapioDigital.Infra.Ioc.Mappings
             CreateMap<ItemCardapioDTO, RestauranteItemCardapio>().ReverseMap();
 
             CreateMap<TagDTO, Tag>().ReverseMap();
+
+            CreateMap<RestricaoAlimentarDTO, RestricaoAlimentar>().ReverseMap();
         }
     }
 }

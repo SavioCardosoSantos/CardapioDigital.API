@@ -18,6 +18,9 @@ public partial class ApplicationDbContext : DbContext
     public DbSet<Tag> Tag { get; set; }
     public DbSet<TagItemCardapio> TagItemCardapio { get; set; }
     public DbSet<RestauranteAbaCardapio> RestauranteAbaCardapio { get; set; }
+    public DbSet<TagCliente> TagCliente { get; set; }
+    public DbSet<RestricaoAlimentar> RestricaoAlimentar { get; set; }
+    public DbSet<RestricaoAlimentarCliente> RestricaoAlimentarCliente { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
