@@ -10,6 +10,7 @@ namespace CardapioDigital.Domain.Interfaces
         Task<RestauranteAbaCardapio?> BuscarPorId(int abaId);
         Task<int> BuscarProximaOrdenacao(int restauranteId);
         Task<IEnumerable<RestauranteAbaCardapio>> BuscarPorRestauranteId(int restauranteId);
+        Task<IEnumerable<RestauranteAbaCardapio>> BuscarPorRestauranteIdIncludeItens(int restauranteId);
         Task Excluir(RestauranteAbaCardapio aba);
     }
 }

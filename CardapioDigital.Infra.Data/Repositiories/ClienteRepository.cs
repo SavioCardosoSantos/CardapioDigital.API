@@ -34,6 +34,17 @@ namespace CardapioDigital.Infra.Data.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<Cliente?> BuscarClientePorIdIncludeOnboarding(int clienteId)
+        {
+            return await _context.Cliente.AsNoTracking()
+                .Where(x => x.Id == clienteId)
+                .Include(x => x.TagClientes)
+                    .ThenInclude(i => i.Tag)
+                .Include(x => x.RestricaoAlimentarClientes)
+                    .ThenInclude(i => i.RestricaoAlimentar)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task Excluir(Cliente cliente)
         {
             _context.Cliente.Remove(cliente);

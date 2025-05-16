@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using CardapioDigital.Application.DTOs;
+using CardapioDigital.Application.DTOs.CardapioCliente;
 using CardapioDigital.Application.Interfaces;
 using CardapioDigital.Domain.Entities;
 using CardapioDigital.Domain.Interfaces;
+using CardapioDigital.Util.Extensions;
 
 namespace CardapioDigital.Application.Services
 {
@@ -38,6 +40,32 @@ namespace CardapioDigital.Application.Services
         {
             var abasRestaurante = await _repository.BuscarPorRestauranteId(restauranteId);
             return _mapper.Map<IEnumerable<AbaCardapioDTO>>(abasRestaurante);
+        }
+
+        public async Task<IEnumerable<AbaCardapioClienteResponse>> BuscarPorRestauranteIdIncludeItens(int restauranteId)
+        {
+            var abasRestaurante = await _repository.BuscarPorRestauranteIdIncludeItens(restauranteId);
+            var abasCardapio = new List<AbaCardapioClienteResponse>();
+
+            foreach(var aba in abasRestaurante)
+            {
+                var itensDTO = new List<ItemCardapioDTO>();
+                foreach (var item in aba.Itens)
+                {
+                    var itemDTO = _mapper.Map<ItemCardapioDTO>(item);
+                    if (item.Imagem.Length > 0)
+                        itemDTO.ImagemBase64 = item.Imagem.ConvertToBase64WithMimeType();
+
+                    foreach (var tagItem in item.TagItemCardapios)
+                        itemDTO.Tags.Add(tagItem.Tag.Texto);
+
+                    itensDTO.Add(itemDTO);
+                }
+
+                abasCardapio.Add(new AbaCardapioClienteResponse(aba.Nome, itensDTO));
+            }
+
+            return abasCardapio;
         }
 
         public async Task Excluir(int abaId)

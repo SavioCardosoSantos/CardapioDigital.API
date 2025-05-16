@@ -43,6 +43,18 @@ namespace CardapioDigital.Infra.Data.Repositiories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<RestauranteAbaCardapio>> BuscarPorRestauranteIdIncludeItens(int restauranteId)
+        {
+            return await _context.RestauranteAbaCardapio.AsNoTracking()
+                .Where(x => x.RestauranteId == restauranteId &&
+                    x.Itens.Any(i => i.Excluido == 0))
+                .Include(x => x.Itens.Where(i => i.Excluido == 0))
+                    .ThenInclude(i => i.TagItemCardapios)
+                        .ThenInclude(j => j.Tag)
+                .OrderBy(x => x.Ordenacao)
+                .ToListAsync();
+        }
+
         public async Task<int> BuscarProximaOrdenacao(int restauranteId)
         {
             var aba = await _context.RestauranteAbaCardapio.AsNoTracking()

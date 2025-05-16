@@ -9,6 +9,7 @@ namespace CardapioDigital.Application.Interfaces
         Task Excluir(int clienteId);
         Task<ClienteDTO?> BuscarClientePorCpf(string cpf);
         Task<ClienteDTO?> BuscarClientePorId(int clienteId);
+        Task<ClienteCompletoDTO?> BuscarClienteCompletoPorId(int clienteId);
         Task<IEnumerable<ClienteDTO>> ListarTodos();
     }
 }

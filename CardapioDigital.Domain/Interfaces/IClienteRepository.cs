@@ -9,6 +9,7 @@ namespace CardapioDigital.Domain.Interfaces
         Task Excluir(Cliente cliente);
         Task<Cliente?> BuscarClientePorCpf(string cpf);
         Task<Cliente?> BuscarClientePorId(int clienteId);
+        Task<Cliente?> BuscarClientePorIdIncludeOnboarding(int clienteId);
         Task<IEnumerable<Cliente>> ListarTodos();
     }
 }

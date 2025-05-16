@@ -43,6 +43,12 @@ namespace CardapioDigital.Application.Services
             return _mapper.Map<ClienteDTO>(cliente);
         }
 
+        public async Task<ClienteCompletoDTO?> BuscarClienteCompletoPorId(int clienteId)
+        {
+            var cliente = await _repository.BuscarClientePorIdIncludeOnboarding(clienteId);
+            return _mapper.Map<ClienteCompletoDTO>(cliente);
+        }
+
         public async Task Excluir(int clienteId)
         {
             var cliente = await _repository.BuscarClientePorId(clienteId) ?? throw new Exception("Cliente não encontrado.");

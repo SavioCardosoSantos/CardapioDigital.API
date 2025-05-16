@@ -21,5 +21,12 @@ namespace CardapioDigital.API.Controllers
             await _service.CriarOnboardingCliente(request);
             return Ok("Onboarding registrado com sucesso!");
         }
+
+        [HttpPut]
+        public async Task<ActionResult> AtualizarOnboardingCliente(OnboardingRequest request)
+        {
+            await _service.AtualizarOnboardingCliente(request);
+            return Ok("Onboarding atualizado com sucesso!");
+        }
     }
 }

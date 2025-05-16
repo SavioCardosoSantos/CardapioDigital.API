@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CardapioDigital.Application.DTOs;
+using CardapioDigital.Application.DTOs.CardapioCliente;
 using CardapioDigital.Application.DTOs.ChatGPT;
 using CardapioDigital.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -50,5 +52,179 @@ namespace CardapioDigital.Application.Services
                 throw new Exception($"Ocorreu uma falha ao gerar as tags para o item.\nErro: {ex.Message}");
             }
         }
+
+        public async Task<IEnumerable<ItemCardapioDTO>> MontarAbaRecomendados(
+            IEnumerable<ItemCardapioDTO> itensCardapio,
+            IEnumerable<string> tagsPedidosAnteriores,
+            IEnumerable<string> tagsOnboarding,
+            IEnumerable<string> restricoesAlimentares)
+        {
+            try
+            {
+                Dictionary<string, int> tagsDic;
+                ContarTags(tagsPedidosAnteriores, tagsOnboarding, out tagsDic);
+
+                IEnumerable<ItemCardapioRanqueado> itensRanqueados;
+                RanquearItens(itensCardapio, tagsDic, out itensRanqueados);
+
+                string promptRecomendacaoGPT;
+                MontarPromptRecomendacaoGPT(
+                    itensRanqueados.Take(15),
+                    tagsDic.Take(15).ToDictionary(),
+                    restricoesAlimentares,
+                    5,
+                    out promptRecomendacaoGPT);
+
+                var content = new StringContent(
+                    JsonSerializer.Serialize(new
+                    {
+                        model = "gpt-4.1",
+                        messages = new[] {
+                        new { role = "system", content = "Você é um assistente que recomenda itens de um cardápio com base nas preferências e restrições do usuário." },
+                        new { role = "user", content = promptRecomendacaoGPT }
+                        }
+                    }),
+                    Encoding.UTF8, "application/json"
+                );
+
+                var response = await _client.PostAsync("https://api.openai.com/v1/chat/completions", content);
+                var responseBody = await response.Content.ReadAsStringAsync();
+                var chatGptResponse = JsonConvert.DeserializeObject<ChatGptResponse>(responseBody);
+                var responseContent = chatGptResponse.Choices.First().Message.Content;
+
+                var itensIdsRecomendados = responseContent.Split('[')[1].Split(']')[0].Split(';').ToList();
+                var itensRecomendados = new List<ItemCardapioDTO>();
+                foreach(var itemId in itensIdsRecomendados)
+                {
+                    var itemDto = itensCardapio.First(x => x.Id == int.Parse(itemId));
+                    if (itemDto != null)
+                        itensRecomendados.Add(itemDto);
+                }
+
+                return itensRecomendados;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Ocorreu uma falha ao montar a aba de itens recomendados.\nErro: {ex.Message}");
+            }
+        }
+
+
+        #region Métodos privados da classe
+        private static void ContarTags(
+            IEnumerable<string> tagsPedidosAnteriores,
+            IEnumerable<string> tagsOnboarding,
+            out Dictionary<string, int> tagsDic)
+        {
+            tagsDic = new Dictionary<string, int>();
+            foreach (var texto in tagsPedidosAnteriores)
+            {
+                if (tagsDic.ContainsKey(texto))
+                    tagsDic[texto] += 1;
+                else
+                    tagsDic[texto] = 1;
+            }
+
+            // Para tags selecionadas no onboarding, soma 5 ao peso da tag
+            foreach (var texto in tagsOnboarding)
+            {
+                if (tagsDic.ContainsKey(texto))
+                    tagsDic[texto] += 5;
+                else
+                    tagsDic[texto] = 5;
+            }
+
+            tagsDic = tagsDic.OrderByDescending(x => x.Value).ToDictionary();
+        }
+        
+        private void RanquearItens(
+            IEnumerable<ItemCardapioDTO> itensCardapio,
+            Dictionary<string, int> tagsDic,
+            out IEnumerable<ItemCardapioRanqueado> itensRanqueados)
+        {
+            var itensTemp = new List<ItemCardapioRanqueado>();
+            foreach (var item in itensCardapio)
+            {
+                var itemRanqueado = _mapper.Map<ItemCardapioRanqueado>(item);
+                foreach (var tag in item.Tags)
+                {
+                    if (tagsDic.ContainsKey(tag))
+                        itemRanqueado.Score += tagsDic[tag];
+                }
+
+                itensTemp.Add(itemRanqueado);
+            }
+
+            itensRanqueados = itensTemp.OrderByDescending(x => x.Score);
+        }
+
+        private static void MontarPromptRecomendacaoGPT(
+            IEnumerable<ItemCardapioRanqueado> itensRanqueados,
+            Dictionary<string, int> tagsDic,
+            IEnumerable<string> restricoesAlimentares,
+            int maxItensRecomendados,
+            out string promptRecomendacaoGPT)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Você receberá uma lista ordenada de itens do cardápio. Cada item contém:");
+            sb.AppendLine("- Id: identificador único do item.");
+            sb.AppendLine("- Nome: nome do prato ou bebida.");
+            sb.AppendLine("- Descrição: descrição textual do item.");
+            sb.AppendLine("- Tags: lista de palavras-chave relacionadas ao item.");
+            sb.AppendLine("- Score: pontuação que indica alinhamento com as preferências do cliente.");
+            sb.AppendLine();
+            sb.AppendLine("Também receberá uma lista das tags mais relevantes para o cliente, com suas respectivas pontuações.");
+            sb.AppendLine();
+            sb.AppendLine("Além disso, há restrições alimentares do cliente que devem ser rigorosamente respeitadas.");
+            sb.AppendLine();
+            sb.AppendLine("Importante: embora algumas tags possam não estar explicitamente listadas nos itens, utilize seu conhecimento para identificar categorias ou características implícitas.");
+            sb.AppendLine("Por exemplo, mesmo que um item como 'Moscow Mule' não tenha a tag 'drink', ele é um drink e deve ser considerado para fins de alinhamento com as preferências do cliente.");
+            sb.AppendLine();
+            sb.AppendLine("Sua tarefa é analisar cada item e recomendar até " + maxItensRecomendados + " itens que:");
+            sb.AppendLine("1. Não violam nenhuma restrição alimentar (exclua itens que contenham ingredientes proibidos, mesmo que não explicitamente mencionados nas tags).");
+            sb.AppendLine("2. Possuem maior alinhamento com as preferências indicadas pelas tags do cliente, considerando também categorias implícitas.");
+            sb.AppendLine("3. Caso não existam itens que satisfaçam as condições acima, a lista de recomendações pode ser vazia.");
+            sb.AppendLine();
+            sb.AppendLine("Restrições alimentares do cliente:");
+            if (restricoesAlimentares.Any())
+                sb.AppendLine("- " + string.Join(", ", restricoesAlimentares));
+            else
+                sb.AppendLine("- Nenhuma");
+            sb.AppendLine();
+            sb.AppendLine("Tags mais relevantes do cliente e suas pontuações:");
+            if (tagsDic.Any())
+            {
+                foreach (var tag in tagsDic)
+                {
+                    sb.AppendLine($"- {tag.Key}: {tag.Value}");
+                }
+            }
+            else
+            {
+                sb.AppendLine("- Nenhuma tag relevante fornecida");
+            }
+            sb.AppendLine();
+            sb.AppendLine("Itens do cardápio:");
+            foreach (var item in itensRanqueados)
+            {
+                sb.AppendLine($"- Id: {item.Id}");
+                sb.AppendLine($"  Nome: {item.Nome}");
+                sb.AppendLine($"  Descrição: {item.Descricao}");
+                sb.AppendLine($"  Tags: {(item.Tags != null && item.Tags.Any() ? string.Join(", ", item.Tags) : "Nenhuma")}");
+                sb.AppendLine($"  Score: {item.Score}");
+                sb.AppendLine();
+            }
+            sb.AppendLine("Liste os até " + maxItensRecomendados + " itens recomendados, ordenados do melhor para o menos indicado, considerando as restrições e preferências descritas.");
+            sb.AppendLine("Não recomende itens que violem as restrições alimentares do cliente.");
+            sb.AppendLine("Lembre-se: o número de itens recomendados pode ser menor que " + maxItensRecomendados + " ou até mesmo vazio se não houver opções adequadas.");
+            sb.AppendLine("Faça todo o raciocício para chegar até a sua resposta final, mas me retorne somente os ids dos itens escolhidos, em ordem do mais recomendado, separados por (;) dentro de um colchete.");
+            sb.AppendLine("Exemplo de resposta final: [32;13;56;6]");
+            sb.AppendLine("Exemplo de resposta final sem nenhuma recomendação: []");
+
+            promptRecomendacaoGPT = sb.ToString();
+        }
+
+        #endregion
     }
 }
