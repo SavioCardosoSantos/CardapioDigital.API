@@ -5,6 +5,7 @@ using CardapioDigital.Application.DTOs.ChatGPT;
 using CardapioDigital.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using System.Net.Mime;
 using System.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -29,13 +30,18 @@ namespace CardapioDigital.Application.Services
         {
             try
             {
+                var promptGeracaoTag = MontarPromptGeracaoTag();
+                var dadosItem = new StringBuilder();
+                dadosItem.AppendLine($"Nome: {nomeItem}");
+                dadosItem.AppendLine($"Descrição: {descricaoItem}");
+
                 var content = new StringContent(
                     JsonSerializer.Serialize(new
                     {
                         model = "gpt-4.1",
                         messages = new[] {
-                        new { role = "system", content = "Sempre que o item for uma caipirinha, um hambúrguer vegetariano ou outros itens comuns, gere as mesmas 3 tags, que devem ser consistentes e enxutas. Exemplo: para caipirinha, as tags devem ser 'caipirinha', 'alcoólico', 'limão'. Para hambúrguer vegetariano, as tags devem ser 'hamburguer', 'vegetariano', 'plantbased'. Quando identificar outros itens, forneça as tags apropriadas. Não escreva nada na resposta a não ser as 3 tags, separadas por (;): ex (caipirinha;limão;alcoólico), palavras únicas que categorizam e identificam bem o item, para relação em um sistema de recomendação de itens de um cardápio digital, logo uma caipirinha e um moscow mule devem estar relacionados pela tag 'alcoólico'. Dê mais relevância a restrição alimentar de vegetariano e vegano, sempre que identificar que um item alimentício (bebidas não é necessário), se encaixa como vegetariano ou vegano, de relevancia pra essa tag, obviamente gere somente 1 delas, se um item é vegano, ele é claramente vegetariano. Evite usar plurais, use as tags sempre no singular, a idéia aqui é padronizar as tags, para inferir o gosto pessoal do cliente pelos seus pedidos anteriores, tente ser mais generalista (por exemplo identificar em qual categoria do cardapio um item se encaixaria (petisco, hamburguer, pizza, drink, sobremesa, cerveja, etc))." },
-                        new { role = "user", content = $"Nome: {nomeItem}\nDescrição: {descricaoItem}" }
+                        new { role = "system", content = promptGeracaoTag },
+                        new { role = "user", content = dadosItem.ToString() }
                         }
                     }),
                     Encoding.UTF8, "application/json"
@@ -44,6 +50,9 @@ namespace CardapioDigital.Application.Services
                 var response = await _client.PostAsync("https://api.openai.com/v1/chat/completions", content);
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var chatGptResponse = JsonConvert.DeserializeObject<ChatGptResponse>(responseBody);
+
+                if (chatGptResponse == null)
+                    throw new Exception();
 
                 return chatGptResponse.Choices.First().Message.Content.Split(";").ToList();
             }
@@ -156,6 +165,38 @@ namespace CardapioDigital.Application.Services
             }
 
             itensRanqueados = itensTemp.OrderByDescending(x => x.Score);
+        }
+
+        private static string MontarPromptGeracaoTag()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Você é um assistente que gera tags para identificar e classificar itens de um cardápio.");
+            sb.AppendLine("Irei utilizar as tags geradas nos itens, para criar uma aba de itens recomendados para cada cliente, me baseando nas tags que mais aparecem nos pedidos anteriores dele.");
+            sb.AppendLine("Considere para itens que são comidas, as seguintes categorias: hambúrguer, petisco, pizza, porção, fritura, salada, prato executivo, massa, grelhado, assado, doce, sobremesa.");
+            sb.AppendLine("Considere para itens que são bebidas, as seguintes categorias: alcoólico, não Alcoólico, refrigerante, suco, drink, vinho, cerveja, destilado, chá.");
+            sb.AppendLine("Para os itens que são comidas, considere as seguintes possíveis restrições alimentares: vegetariano, vegano, sem lactose, sem glúten, sem açúcar, low carb.");
+            sb.AppendLine();
+            sb.AppendLine("Irei te informar o nome e a descrição do item, categorize o item em 3 tags, existentes ou não nas tags listadas, como nos exemplos abaixo:");
+            sb.AppendLine();
+            sb.AppendLine("Nome: Caipirinha");
+            sb.AppendLine("Descrição: O clássico drink brasileiro, refrescante como sempre");
+            sb.AppendLine("Retorno esperado: alcoólico;drink;limão");
+            sb.AppendLine("Outro retorno possível: alcoólico;drink;cachaça");
+            sb.AppendLine();
+            sb.AppendLine("Nome: Hambúrguer Vegetariano");
+            sb.AppendLine("Descrição: Um delicioso hambúrguer feito com carne de soja e pão livre de glúten");
+            sb.AppendLine("Retorno esperado: hambúrguer;vegetariano;sem glúten");
+            sb.AppendLine();
+            sb.AppendLine("Nome: Salada de Frutas");
+            sb.AppendLine("Descrição: Salada que leva manga, maça, pera, abacaxi e suco de laranja.");
+            sb.AppendLine("Retorno esperado: vegano;low carb; sem açúcar");
+            sb.AppendLine("Outro possível retorno: vegano;sem glúten; sem lactose");
+            sb.AppendLine("Não escreva nada na resposta a não ser as 3 tags, separadas por (;), como nos exemplos de retorno que forneci.");
+            sb.AppendLine();
+            sb.AppendLine("Dê mais relevância a restrição alimentar de vegetariano e vegano, sempre que identificar que um item alimentício (bebidas não é necessário), se encaixa como vegetariano ou vegano, de relevancia pra essa tag, obviamente gere somente 1 delas, se um item é vegano, ele é claramente vegetariano. Evite usar plurais, use as tags sempre no singular, a idéia aqui é padronizar as tags, para inferir o gosto pessoal do cliente pelos seus pedidos anteriores, tente ser mais generalista (por exemplo identificar em qual categoria do cardapio um item se encaixaria (petisco, hamburguer, pizza, drink, sobremesa, cerveja, etc)).");
+
+            return sb.ToString();
         }
 
         private static void MontarPromptRecomendacaoGPT(
