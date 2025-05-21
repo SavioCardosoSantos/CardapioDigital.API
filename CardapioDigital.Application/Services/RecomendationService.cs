@@ -5,7 +5,6 @@ using CardapioDigital.Application.DTOs.ChatGPT;
 using CardapioDigital.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System.Net.Mime;
 using System.Text;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -258,6 +257,7 @@ namespace CardapioDigital.Application.Services
             }
             sb.AppendLine("Liste os até " + maxItensRecomendados + " itens recomendados, ordenados do melhor para o menos indicado, considerando as restrições e preferências descritas.");
             sb.AppendLine("Não recomende itens que violem as restrições alimentares do cliente.");
+            sb.AppendLine("Tente variar nas recomendações, por exemplo não recomendar 5 sucos pro cliente, ou 5 hambúrgueres, tente recomendar itens variados (desde que estejam dentro do paladar do cliente).");
             sb.AppendLine("Lembre-se: o número de itens recomendados pode ser menor que " + maxItensRecomendados + " ou até mesmo vazio se não houver opções adequadas.");
             sb.AppendLine("Faça todo o raciocício para chegar até a sua resposta final, mas me retorne somente os ids dos itens escolhidos, em ordem do mais recomendado, separados por (;) dentro de um colchete.");
             sb.AppendLine("Exemplo de resposta final: [32;13;56;6]");

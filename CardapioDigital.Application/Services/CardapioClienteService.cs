@@ -54,7 +54,7 @@ namespace CardapioDigital.Application.Services
             var tagsOnboarding = cliente.TagClientes.Select(x => x.Tag.Texto).ToList();
             var restricoesAlimentares = cliente.RestricaoAlimentarClientes.Select(x => x.RestricaoAlimentar.Texto).ToList();
 
-            var itensAbaRecomendados = await _recommendationService.MontarAbaRecomendados(itensCardapio, tagsPedidosAnteriores, tagsOnboarding, restricoesAlimentares);
+            var itensAbaRecomendados = await _recommendationService.MontarAbaRecomendados(itensCardapio.Where(x => x.Disponivel == 1), tagsPedidosAnteriores, tagsOnboarding, restricoesAlimentares);
             var abaRecomendacao = new AbaCardapioClienteResponse() 
             {
                 Nome = "Recomendados para Você",
