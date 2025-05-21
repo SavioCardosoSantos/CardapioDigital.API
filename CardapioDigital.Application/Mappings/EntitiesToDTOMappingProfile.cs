@@ -20,7 +20,7 @@ namespace CardapioDigital.Application.Mappings
             CreateMap<TagCliente, TagClienteDTO>().ReverseMap();
 
             CreateMap<Restaurante, RestauranteDTO>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (eStatusRestaurante)src.Excluido));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (eStatusRestaurante)src.Excluido)).ReverseMap();
         }
     }
 }
