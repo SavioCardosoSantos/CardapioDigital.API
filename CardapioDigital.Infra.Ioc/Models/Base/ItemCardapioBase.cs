@@ -12,7 +12,7 @@ namespace CardapioDigital.Infra.Ioc.Models.Base
         public string Nome { get; set; }
 
         [Required(ErrorMessage = "A Descrição é obrigatória")]
-        [MaxLength(100, ErrorMessage = "O Nome não pode ter mais de 500 caracteres")]
+        [MaxLength(500, ErrorMessage = "A Descrição não pode ter mais de 500 caracteres")]
         public string Descricao { get; set; }
 
         [Required(ErrorMessage = "A Imagem do item é obrigatória")]
