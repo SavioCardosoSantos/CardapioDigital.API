@@ -257,6 +257,7 @@ namespace CardapioDigital.Application.Services
             }
             sb.AppendLine("Liste os até " + maxItensRecomendados + " itens recomendados, ordenados do melhor para o menos indicado, considerando as restrições e preferências descritas.");
             sb.AppendLine("Não recomende itens que violem as restrições alimentares do cliente.");
+            sb.AppendLine("Cuidado para não ser muito restritivo nas recomendações. Por exemplo, uma pessoa intolerante a lactose, pode comer pão, mesmo que ele leve leite em sua composição, é uma quantidade irrisória, mas você não deve recomendar itens com queijo para clientes intolerantes a lactose por exemplo.");
             sb.AppendLine("Evite recomendar itens veganos ou vegetarianos para clientes que não possuem essas restrições.");
             sb.AppendLine("Tente variar nas recomendações, por exemplo não recomendar 5 sucos pro cliente, ou 5 hambúrgueres, tente recomendar itens variados (desde que estejam dentro do paladar do cliente).");
             sb.AppendLine("Lembre-se: o número de itens recomendados pode ser menor que " + maxItensRecomendados + " ou até mesmo vazio se não houver opções adequadas.");
